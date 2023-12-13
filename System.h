@@ -1,291 +1,178 @@
 #pragma once
 #ifndef SYSTEM_H
 #define SYSTEM_H
+#include<iostream>
+#include<fstream>
 #include<string>
 #include"Student.h"
 #include"Course.h"
 #include"FileHandler.h"
 using namespace std;
-string Student::getname()
-{
-	return name;
-}
-string Student::getrollnum()
-{
-	return roll_num;
-}
-int Student::getage()
-{
-	return age;
-}
-long long Student::getcontact()
-{
-	return contact;
-}
-void Student::Enter()
-{
-	string fname , lname;
-	cout << "Enter first name : ";
-	cin >> fname;
-	cout << "Enter last name : ";
-	cin >> lname;
-	name = fname + " " + lname;
-	cout << "Enter roll no : ";
-	cin >> roll_num;
-	cout << "Enter age = ";
-	cin >> age;
-	cout << "Enter contact = ";
-	cin >> contact;
-}
-void Student::DisplayStudents()
-{
-	cout << name << endl;
-	cout << roll_num << endl;
-	cout << age << endl;
-	cout << contact << endl;
-	cout << total_courses << endl;
-}
+
 class System
 {
 private:
-	Student* students;
-	//Course* courses;
-	int menus;
-	int total_students;
+	Course* courses;
+	int totalcourses;
+	int main_choice;
+	FileHandler file;
 public:
 	System()
 	{
-		students = 0;
-		menus = 0;
-		total_students = 0;
-		FileHandler f1;
-		f1.open("Students.txt", ios::in);
-		f1.READ(students, total_students);
-
+		courses = 0;
+		totalcourses = 0;
+		main_choice = 0;
+		file;
+		file.open("Courses.txt", ios::in);
+		file.read(courses, totalcourses);
+		file.close();
 	}
-	void Mainmenu()
+	void DisplayMain()
 	{
 	start:
-		system("cls");
-		cout << "\t1 - enroll a student\n";
-		cout << "\t2 - course registration\n";
-		cout << "\t3 - attendance\n";
-		cout << "\t4 - marks\n";
-		cout << "\t5 - course withdraw\n";
-		cout << "\t6 - exit\n";
-		cin >> menus;
-		if (menus > 6 || menus == 0)
+		cout << "\t1 - Enroll Student\n";
+		cout << "\t2 - Course Registration\n";
+		cout << "\t3 - Attendance\n";
+		cout << "\t4 - Marks\n";
+		cout << "\t5 - Exit\n";
+		cin >> main_choice;
+		if (main_choice > 5 || main_choice < 0)
 		{
 			system("cls");
-			cout << "invalid input!!\n";
+			cout << "\n\n\t\tInvalid Entry\n";
 			Sleep(3000);
 			goto start;
 		}
-		else if (menus <= 5)
+		else if (main_choice <= 4)
 		{
-			this->submenu(menus);
+			this->DisplaySub(main_choice);
 		}
-		else
-		{   
-				
+		else if (main_choice == 5)
+		{
+			system("cls");
+			cout << "THANK YOU FOR USING FLEXX\n";
 		}
-		Sleep(100);
+		Sleep(3000);
 	}
-	void submenu(int i)
+	void DisplaySub(int mmc)
 	{
-		int in;
+		int sub_choice;
 	start:
 		system("cls");
-		if (i == 1)
+		if (mmc == 1)
 		{
-			cout << "\t1 - display already enrolled students\n";
-			cout << "\t2 - add a student\n";
-			cout << "\t3 - remove a student\n";
-			cout << "\t4 - edit student detail\n";
-			cout << "\t5 - back\n";
-			cin >> in;
-			if (in > 5 || in == 0)
+			cout << "\t1 - Display Already Enrolled Students\n";
+			cout << "\t2 - Add a Student\n";
+			cout << "\t3 - Remove a Student\n";
+			cout << "\t4 - Edit Student Detail\n";
+			cout << "\t5 - Back\n";
+			cin >> sub_choice;
+			if (sub_choice > 5 || sub_choice < 0)
 			{
 				system("cls");
-				cout << "invalid input!!\n";
+				cout << "\n\n\t\tInvalid Entry\n";
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 1)
+			else if (sub_choice == 1)
 			{
-				system("cls");
-				for (int i = 0; i < total_students; i++)
+				for (int i = 0; i < totalcourses; i++)
 				{
-					students[i].DisplayStudents();
+					courses[i].DisplayStudents();
 				}
-				Sleep(3000);
 				goto start;
 			}
-			else if (in == 2)
+			else if (sub_choice == 2)
 			{
-				int len = total_students + 1, i = 0;
-				Student* temp = new Student[len];
-				for (i; i < total_students; i++)
-				{
-					temp[i] = students[i];
-				}
+			a:
+				int i = 0;
 				system("cls");
-				temp[i].Enter();
-				Sleep(3000);
-				delete[] students;
-				students = temp;
-				total_students = len;
-				FileHandler fin;
-				remove("Students.txt");
-				fin.open("Students.txt", ios::app);
-				fin << total_students;
-				fin << '\n';
-				for (int j = 0; j < total_students; j++)
+				cout << "\t\"Available course\"\n\n";
+				for (int j = 0; j < totalcourses; j++)
 				{
-					fin << students[j].getname();
-					fin << "\t\t";
-					fin << students[j].getrollnum();
-					fin << "\t\t";
-					fin << students[j].getage();
-					fin << "\t\t";
-					fin << students[j].getcontact();
-					fin << '\n';
+					cout << "\t" << j << " - ";
+					courses[j].AvailableCourses();
 				}
-				fin.close();
-				Sleep(3000);
-				goto start;
-			}
-			else if (in == 3)
-			{
-				system("cls");
-				FileHandler fin;
-				string roll;
-				Student* temp;
-				int len;
-				cout << "Enter the Roll number of Student = ";
-				cin >> roll;
-				bool flag = false;
-				for (int i = 0; i < total_students; i++)
+				do
 				{
-					if (roll == students[i].getrollnum())
+					if (i < 0 || i > totalcourses - 1)
 					{
-						flag = true;
-						len = total_students - 1;
-						temp = new Student[len];
-						int k = 0;
-						for (int j = 0; j < total_students; j++)
-						{
-							if (roll == students[j].getrollnum())
-							{
-								continue;
-							}
-							else
-							{
-								temp[k] = students[j];
-								k++;
-							}
-						}
-						delete[] students;
-						students = temp;
-						total_students = len;
+						system("cls");
+						cout << "\n\n\t\tInvalid Entry\n";
+						Sleep(3000);
+						goto a;
 					}
-
-				}
-				if (!flag)
-				{
-					cout << "Roll num not found!!!\n";
-				}
-				remove("Students.txt");
-				fin.open("Students.txt", ios::app);
-				fin << total_students;
-				fin << '\n';
-				for (int i = 0; i < total_students; i++)
-				{
-					fin << students[i].getname();
-					fin << "\t\t";
-					fin << students[i].getage();
-					fin << "\t\t";
-					fin << students[i].getrollnum();
-					fin << "\t\t";
-					fin << students[i].getcontact();
-					fin << '\n';
-				}
-				fin.close();
-				Sleep(100);
+					cout << "\nSelect Course in which you want to enroll students in = ";
+					cin >> i;
+				} while (i < 0 || i > totalcourses - 1);
+				courses[i].EnrollStudent();
+				Sleep(3000);
 				goto start;
 			}
-			else if (in == 4)
+			else if (sub_choice == 3)
 			{
+			b:
+				int i = 0;
 				system("cls");
-				FileHandler fin;
-				string roll;
-				Student* temp;
-				int len;
-				cout << "Enter the Roll number of Student = ";
-				cin >> roll;
-				bool flag = false;
-				for (int i = 0; i < total_students; i++)
+				cout << "\t\Available Courses\"\n\n";
+				for (int j = 0; j < totalcourses; j++)
 				{
-					if (roll == students[i].getrollnum())
+					cout << "\t" << j << " - ";
+					courses[j].AvailableCourses();
+				}
+				do
+				{
+					if (i < 0 || i > totalcourses - 1)
 					{
-						cout << "Enter the updated detail of student under roll num " << roll << "!!!!!\n";
-						students[i].Enter();
+						system("cls");
+						cout << "\n\n\t\tInvalid Entry\n";
+						Sleep(3000);
+						goto b;
 					}
+					cout << "\nEnter Course from which you want to remove student = ";
+					cin >> i;
+				} while (i < 0 || i > totalcourses - 1);
+				courses[i].DeleteStudent();
+				Sleep(3000);
+				goto start;
 
-				}
-				if (!flag)
-				{
-					cout << "Roll num not found!!!\n";
-				}
-				remove("Students.txt");
-				fin.open("Students.txt", ios::app);
-				fin << total_students;
-				fin << '\n';
-				for (int i = 0; i < total_students; i++)
-				{
-					fin << students[i].getname();
-					fin << "\t\t";
-					fin << students[i].getage();
-					fin << "\t\t";
-					fin << students[i].getrollnum();
-					fin << "\t\t";
-					fin << students[i].getcontact();
-					fin << '\n';
-				}
-				fin.close();
-				Sleep(100);
+			}
+			else if (sub_choice == 4)
+			{
+				courses = courses->EditStudentDetails(totalcourses);
+				Sleep(3000);
 				goto start;
 			}
-			else if (in == 5)
+			else if (sub_choice == 5)
 			{
-				this->Mainmenu();
+				this->DisplayMain();
 			}
-		/*}
-		else if (i == 2)
+		}
+		else if (mmc == 2)
 		{
-			cout << "\t1 - available courses\n";
-			cout << "\t2 - register course\n";
-			cout << "\t3 - back\n";
-			cin >> in;
-			if (in > 3 || in == 0)
+			cout << "\t1 - Available Courses\n";
+			cout << "\t2 - Add a New Course\n";
+			cout << "\t3 - Back\n";
+			cin >> sub_choice;
+			if (sub_choice > 3 || sub_choice < 0)
 			{
 				system("cls");
-				cout << "invalid input!!\n";
+				cout << "\n\n\t\tInvalid Entry\n";
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 1)
+			else if (sub_choice == 1)
 			{
 				system("cls");
 				cout << "\t\"Available course\"\n\n";
 				for (int j = 0; j < totalcourses; j++)
 				{
-					courses[j].Availablecourse();
+					courses[j].AvailableCourses();
 				}
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 2)
+			else if (sub_choice == 2)
 			{
 				int len = totalcourses + 1, i = 0;
 				Course* temp = new Course[len];
@@ -293,123 +180,123 @@ public:
 				{
 					temp[i] = courses[i];
 				}
-				temp[i].Input();
+				temp[i].Enter();
 				delete[] courses;
 				courses = temp;
 				totalcourses = len;
-				FileHandler fin;
-				remove("courses.txt");
-				fin.open("courses.txt", ios::app);
-				fin << totalcourses;
-				fin << '\n';
+				remove("Courses.txt");
+				file.open("Courses.txt", ios::app);
+				file << totalcourses;
+				file << '\n';
 				for (int j = 0; j < totalcourses; j++)
 				{
-					fin << courses[j].getcode();
-					fin << "\t\t";
-					fin << courses[j].getname();
-					fin << "\t\t";
-					fin << courses[j].getinstructor();
-					fin << "\t\t";
-					fin << courses[j].getcredits();
-					fin << "\t\t";
-					fin << courses[j].getcapacity();
-					fin << '\n';
+					file << courses[j].getcode();
+					file << "\t\t";
+					file << courses[j].GetName();
+					file << "\t\t";
+					file << courses[j].getinstructor();
+					file << "\t\t";
+					file << courses[j].getcredits();
+					file << "\t\t";
+					file << courses[j].getcapacity();
+					file << '\n';
 				}
-				fin.close();
+				cout << "New Course Successfully Added\n";
+				file.close();
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 3)
+			else if (sub_choice == 3)
 			{
-				this->mainmenu();
+				this->DisplayMain();
 			}
 		}
-		else if (i == 3)
+		else if (mmc == 3)
 		{
-			cout << "\t1 - display attendance(subject wise)\n";
-			cout << "\t2 - mark attendance.\n";
-			cout << "\t3 - back\n";
-			cin >> in;
-			if (in > 3 || in == 0)
+			cout << "\t1 - Display Attendance(Course wise)\n";
+			cout << "\t2 - Mark Attendance.\n";
+			cout << "\t3 - Back\n";
+			cin >> sub_choice;
+			if (sub_choice > 3 || sub_choice < 0)
 			{
 				system("cls");
-				cout << "invalid input!!\n";
+				cout << "\n\n\t\tInvalid Entry\n";
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 1)
+			else if (sub_choice == 1)
 			{
-				int i = 0;
 			c:
+				int i = 0;
 				system("cls");
 				cout << "\t\"Available course\"\n\n";
 				for (int j = 0; j < totalcourses; j++)
 				{
 					cout << "\t" << j << " - ";
-					courses[j].Availablecourse();
+					courses[j].AvailableCourses();
 				}
 				do
 				{
-					if (i < 0 || i > totalcourses)
+					if (i < 0 || i > totalcourses - 1)
 					{
 						system("cls");
-						cout << "invalid input!!\n";
+						cout << "\n\n\t\tInvalid Entry\n";
 						Sleep(3000);
 						goto c;
 					}
-					cout << "\nFor which course you want to display attendance = ";
+					cout << "\nFor which course you want to Display Attendance = ";
 					cin >> i;
-				} while (i < 0 || i > totalcourses);
+				} while (i < 0 || i > totalcourses - 1);
 				courses[i].DisplayAttendance();
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 2)
+			else if (sub_choice == 2)
 			{
-				int i = 0;
 			d:
+				int i = 0;
 				system("cls");
 				cout << "\t\"Available course\"\n\n";
 				for (int j = 0; j < totalcourses; j++)
 				{
 					cout << "\t" << j << " - ";
-					courses[j].Availablecourse();
+					courses[j].AvailableCourses();
 				}
 				do
 				{
-					if (i < 0 || i > totalcourses)
+					if (i < 0 || i > totalcourses - 1)
 					{
 						system("cls");
-						cout << "invalid input!!\n";
+						cout << "INVALID ENTRY\n";
 						Sleep(3000);
 						goto d;
 					}
-					cout << "\nFor which course you want to mark attendance = ";
+					cout << "\nFor which course you want to Mark Attendance = ";
 					cin >> i;
-				} while (i < 0 || i > totalcourses);
+				} while (i < 0 || i > totalcourses - 1);
 				courses[i].MarkAttendance();
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 3)
+			else if (sub_choice == 3)
 			{
-				this->mainmenu();
+				this->DisplayMain();
 			}
 		}
-		else if (i == 4)
+		else if (mmc == 4)
 		{
-			cout << "\t1 - display marks(subject wise)\n";
-			cout << "\t2 - assign marks.\n";
-			cout << "\t3 - back\n";
-			cin >> in;
-			if (in > 3 || in == 0)
+			cout << "\t1 - Display Marks(subject wise)\n";
+			cout << "\t2 - Assign Marks.\n";
+			cout << "\t3 - Back\n";
+			cin >> sub_choice;
+			if (sub_choice > 3 || sub_choice < 0)
 			{
 				system("cls");
-				cout << "invalid input!!\n";
+				cout << "\n\n\t\tInvalid Entry\n";
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 1)
+			else if (sub_choice == 1)
 			{
 				int i = 0;
 			e:
@@ -418,25 +305,25 @@ public:
 				for (int j = 0; j < totalcourses; j++)
 				{
 					cout << "\t" << j << " - ";
-					courses[j].Availablecourse();
+					courses[j].AvailableCourses();
 				}
 				do
 				{
-					if (i < 0 || i > totalcourses)
+					if (i < 0 || i > totalcourses - 1)
 					{
 						system("cls");
-						cout << "invalid input!!\n";
+						cout << "\n\n\t\tInvalid Entry\n";
 						Sleep(3000);
 						goto e;
 					}
-					cout << "\nFor which course you want to display marks = ";
+					cout << "\nSelect the course For which you want to Display Marks = ";
 					cin >> i;
-				} while (i < 0 || i > totalcourses);
+				} while (i < 0 || i > totalcourses - 1);
 				courses[i].DisplayMarks();
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 2)
+			else if (sub_choice == 2)
 			{
 				int i = 0;
 			f:
@@ -445,48 +332,30 @@ public:
 				for (int j = 0; j < totalcourses; j++)
 				{
 					cout << "\t" << j << " - ";
-					courses[j].Availablecourse();
+					courses[j].AvailableCourses();
 				}
 				do
 				{
-					if (i < 0 || i > totalcourses)
+					if (i < 0 || i > totalcourses - 1)
 					{
 						system("cls");
-						cout << "invalid input!!\n";
+						cout << "\n\n\t\tInvalid Entry\n";
 						Sleep(3000);
 						goto f;
 					}
-					cout << "\nFor which course you want to assign marks = ";
+					cout << "\nSelect the Course For which you want to Assign Marks = ";
 					cin >> i;
-				} while (i < 0 || i > totalcourses);
+				} while (i < 0 || i > totalcourses - 1);
 				courses[i].AssignMarks();
 				Sleep(3000);
 				goto start;
 			}
-			else if (in == 3)
+			else if (sub_choice == 3)
 			{
-				this->mainmenu();
+				this->DisplayMain();
 			}
 		}
-		else if (i == 5)
-		{
-			cout << "\t1 - enrolled courses\n";
-			cout << "\t2 - drop a course\n";
-			cout << "\t3 - back\n";
-			cin >> in;
-			if (in > 3 || in == 0)
-			{
-				system("cls");
-				cout << "invalid input!!\n";
-				Sleep(3000);
-				goto start;
-			}
-			else if (in == 3)
-			{
-				this->mainmenu();
-			}*/
-		}
-		Sleep(100);
+		Sleep(3000);
 	}
 };
 #endif // !SYSTEM_H

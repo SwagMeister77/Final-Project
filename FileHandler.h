@@ -3,9 +3,9 @@
 #define FILEHANDLER_H
 #include<string>
 #include<fstream>
+#include"Course.h"
 #include"Student.h"
 using namespace std;
-
 class FileHandler
 {
 private:
@@ -15,123 +15,94 @@ private:
 public:
 	FileHandler()
 	{
-		filename = "";
-		mode = 0;
 		fin;
 	}
-	void open(const char* f, ios::openmode m)
+	void open(string f, ios::openmode m)
 	{
-		fin.open(f, m);
+		filename = f;
+		mode = m;
+		fin.open(filename, m);
 	}
 	void close()
 	{
 		fin.close();
 	}
-	void READ(Student*& student, int& cap)
+	void read(Course*& obj, int& t)
 	{
-		fin >> cap;
-		student = new Student[cap];
-		string c_name, f_name, l_name, roll_ID;
-		int age;
-		long long contact_num;
-		for (int i = 0; i < cap; i++)
+		fin >> t;
+		obj = new Course[t];
+		string code, name, instructor, finstructor, linstructor;
+		int credits, capacity;
+		for (int i = 0; i < t; i++)
 		{
-			fin >> f_name;
-			fin >> l_name;
-			c_name = f_name + " " + l_name;
-			fin >> roll_ID;
-			fin >> age;
-			fin >> contact_num;
-			fstream temp;
-			int total_attendance;
-			int Marks_count;
-			Course* course;
-			int course_count;
-			filename = roll_ID + "_C.txt";
-			temp.open(filename, ios::in);
-			if (temp)
+			fin >> code;
+			fin >> name;
+			fin >> finstructor;
+			fin >> linstructor;
+			instructor = finstructor + " " + linstructor;
+			fin >> credits;
+			fin >> capacity;
+			fstream tmp;
+			Student* o = 0;
+			int T;
+			string fname = code + ".txt";
+			tmp.open(fname, ios::in);
+			if (tmp)
 			{
-				string IF_name, IL_name;
-
-				temp >> course_count;
-				course = new Course[course_count];
-				for (int n = 0; n < course_count; n++)
+				tmp >> T;
+				o = new Student[T];
+				string a, b;
+				for (int j = 0; j < T; j++)
 				{
-					temp >> course[n].code;
-					temp >> course[n].name;
-					temp >> course[n].creds;
-					temp >> IF_name;
-					temp >> IL_name;
-					course[n].instructor = IF_name + " " + IL_name;
-					temp >> course[n].capacity;
-					fstream tmp;
-					string filename = (course[n].code) + roll_ID + "_A.txt";
-					tmp.open(filename, ios::in);
-					if (tmp)
+					tmp >> a;
+					tmp >> b;
+					o[j].name = a + " " + b;
+					tmp >> o[j].age;
+					tmp >> o[j].roll_num;
+					tmp >> o[j].contact;
+					string fname1 = code + o[j].roll_num + ".txt";
+					fstream tmp1;
+					tmp1.open(fname1, ios::in);
+					tmp1 >> o[j].Attendance_Count;
+					o[j].attendance = new char[o[j].Attendance_Count];
+					for (int k = 0; k < o[j].Attendance_Count; k++)
 					{
-						tmp >> total_attendance;
-						course[n].attendance_count = total_attendance;
-						course[n].attendance = new char[total_attendance];
-						for (int j = 0; j < total_attendance; j++)
-						{
-							tmp >> course[n].attendance[j];
-						}
+						tmp1 >> o[j].attendance[k];
 					}
-					tmp.close();
-					string filename1 = (course[n].code) + roll_ID + "_M.txt";
-					tmp.open(filename1, ios::in);
-					if (tmp)
+					tmp1.close();
+					string fname2 = code + o[j].roll_num + "M" + ".txt";
+					tmp1.open(fname2, ios::in);
+					tmp1 >> o[j].Marks_Count;
+					o[j].marks = new int[o[j].Marks_Count];
+					for (int k = 0; k < o[j].Marks_Count; k++)
 					{
-						tmp >> Marks_count;
-						course[n].marks_count = Marks_count;
-						course[n].marks = new int[Marks_count];
-						for (int j = 0; j < Marks_count; j++)
-						{
-							tmp >> course[n].marks[j];
-						}
+						tmp1 >> o[j].marks[k];
 					}
-					tmp.close();
+					tmp1.close();
 				}
-
 			}
 			else
 			{
-				course = 0;
-				course_count = 0;
+				T = 0;
+				o = 0;
 			}
-			temp.close();
-
-			student[i].ReadDataFromFile(c_name, roll_ID, age, contact_num, course, course_count);
+			tmp.close();
+			obj[i].File_Reader(code, name, instructor, credits, capacity, o, T);
 		}
-
 	}
-
-	void operator>>(Student& obj)
-	{
-		fin >> obj.name;
-		fin >> obj.age;
-		fin >> obj.roll_num;
-		fin >> obj.contact;
-	}
-	void operator<<(string n)
-	{
-		fin << n;
-		fin << " ";
-	}
-	void operator<<(int a)
+	template<typename T>
+	void operator<<(T a)
 	{
 		fin << a;
-		fin << " ";
 	}
-	void operator<<(long long c)
+	template<typename T>
+	void operator>>(T& n)
 	{
-		fin << c;
-		fin << " ";
+		fin >> n;
 	}
-	void operator<<(char a)
+	bool operator!()
 	{
-		fin << a;
-		fin << " ";
+		return (fin.eof() == 0);
 	}
 };
-#endif // !FILEHANDLER_H
+#endif // !FILEHANDLER_H

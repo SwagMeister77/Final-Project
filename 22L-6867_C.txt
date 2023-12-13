@@ -1,3 +1,0 @@
-2
-CS1005	Programming-Fundamentals	4	Fraz Yusuf	100
-MT1004	Linear-Algebra			3	Akhlaq Bhatti	100

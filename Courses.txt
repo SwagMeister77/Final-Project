@@ -1,0 +1,6 @@
+5
+MT		Differential-Equation		Hina Dilawar		3		50
+CS		Digital-logic-Design		Mehmoona Akram		3		50
+EE		Applied-Physics		Faizan Saleem		2		50
+EE		Computer-Architecture		Samin Iftikhar		4		50
+MG		Marketing-Management		Danish Ajmal		3		50
